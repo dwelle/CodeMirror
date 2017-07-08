@@ -60,7 +60,13 @@ export let commands = {
   ),
   goLineRight: cm => cm.extendSelectionsBy(range => {
     let top = cm.cursorCoords(range.head, "div").top + 5
-    return cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div")
+    let pos = cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div")
+    // target pos is on next line
+    if ( cm.charCoords(pos, "div").top + 5 > top ) {
+        let char = cm.getRange({ line: pos.line, ch: pos.ch - 1 }, pos )
+        if ( /\s/.test(char) ) { pos.ch-- }
+    }
+    return pos
   }, sel_move),
   goLineLeft: cm => cm.extendSelectionsBy(range => {
     let top = cm.cursorCoords(range.head, "div").top + 5
