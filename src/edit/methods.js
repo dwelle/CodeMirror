@@ -281,10 +281,13 @@ export default function(CodeMirror) {
 
     moveH: methodOp(function(dir, unit) {
       this.extendSelectionsBy(range => {
-        if (this.display.shift || this.doc.extend || range.empty())
-          return findPosH(this.doc, range.head, dir, unit, this.options.rtlMoveVisually)
-        else
+        if (this.display.shift || this.doc.extend || range.empty()) {
+          let pos = findPosH(this.doc, range.head, dir, unit, this.options.rtlMoveVisually)
+          pos.sticky = "after"
+          return pos
+        } else {
           return dir < 0 ? range.from() : range.to()
+        }
       }, sel_move)
     }),
 
