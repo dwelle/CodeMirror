@@ -366,7 +366,12 @@ function gutterEvent(cm, e, type, prevent) {
     try { mX = e.clientX; mY = e.clientY }
     catch(e) { return false }
   }
-  if (mX >= Math.floor(cm.display.gutters.getBoundingClientRect().right)) return false
+  if ( cm.getOption("horizontalPadding") ) {
+    let { left, right } = cm.display.gutters.getBoundingClientRect();
+    if (mX >= Math.floor(right) || mX <= Math.floor(left)) { return false }
+  } else {
+    if (mX >= Math.floor(cm.display.gutters.getBoundingClientRect().right)) return false
+  }
   if (prevent) e_preventDefault(e)
 
   let display = cm.display

@@ -7,6 +7,9 @@ import { updateGutterSpace } from "./update_display.js"
 // Re-align line numbers and gutter marks to compensate for
 // horizontal scrolling.
 export function alignHorizontally(cm) {
+  // disable ATM coz it messes up our custom gutter positioning and we don't
+  //  allow horizontal wrapping anyway
+  return
   let display = cm.display, view = display.view
   if (!display.alignWidgets && (!display.gutters.firstChild || !cm.options.fixedGutter)) return
   let comp = compensateForHScroll(display) - display.scroller.scrollLeft + cm.doc.scrollLeft

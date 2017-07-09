@@ -125,6 +125,13 @@ export function updateDisplayIfNeeded(cm, update) {
   display.viewOffset = heightAtLine(getLine(cm.doc, display.viewFrom))
   // Position the mover div to align with the current scroll position
   cm.display.mover.style.top = display.viewOffset + "px"
+  if ( cm.options.horizontalPadding ) {
+    if ( cm.options.horizontalPadding < cm.display.gutters.offsetWidth ) {
+      cm.display.mover.style.padding = "0 0 0 " + (cm.options.horizontalPadding + cm.display.gutters.offsetWidth) + "px"
+    } else {
+      cm.display.mover.style.padding = "0 " + cm.options.horizontalPadding + "px"
+    }
+  }
 
   let toUpdate = countDirtyView(cm)
   if (!different && toUpdate == 0 && !update.force && display.renderedView == display.view &&
@@ -249,8 +256,9 @@ function patchDisplay(cm, updateNumbersFrom, dims) {
 }
 
 export function updateGutterSpace(cm) {
-  let width = cm.display.gutters.offsetWidth
-  cm.display.sizer.style.marginLeft = width + "px"
+    var offset = cm.display.gutters.offsetWidth;
+    if ( cm.options.horizontalPadding < offset ) offset = 0;
+    if ( cm.options.horizontalPadding ) cm.display.gutters.style.left = (cm.options.horizontalPadding - offset - cm.options.gutterMargin) + "px";
 }
 
 export function setDocumentHeight(cm, measure) {
