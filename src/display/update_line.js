@@ -103,7 +103,7 @@ function updateLineGutter(cm, lineView, lineN, dims) {
   let markers = lineView.line.gutterMarkers
   if (cm.options.lineNumbers || markers) {
     let wrap = ensureLineWrapped(lineView)
-    let gutterWrap = lineView.gutter = elt("div", null, "CodeMirror-gutter-wrapper", `left: ${cm.options.fixedGutter ? dims.fixedPos : -dims.gutterTotalWidth}px`)
+    let gutterWrap = lineView.gutter = elt("div", null, "CodeMirror-gutter-wrapper", `left: ${-dims.gutterTotalWidth - cm.options.gutterMargin}px`)
     cm.display.input.setUneditable(gutterWrap)
     wrap.insertBefore(gutterWrap, lineView.text)
     if (lineView.line.gutterClass)
