@@ -316,10 +316,7 @@ export default function(CodeMirror) {
 
     moveV: methodOp(function(dir, unit) {
       let doc = this.doc, goals = []
-      let collapse = !this.display.shift && !doc.extend && doc.sel.somethingSelected()
       doc.extendSelectionsBy(range => {
-        if (collapse)
-          return dir < 0 ? range.from() : range.to()
         let headPos = cursorCoords(this, range.head, "div")
         if (range.goalColumn != null) headPos.left = range.goalColumn
         goals.push(headPos.left)
