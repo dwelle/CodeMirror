@@ -52,16 +52,17 @@ function cmpCoords(a, b) { return a.top - b.top || a.left - b.left }
 function drawSelectionRange(cm, range, output) {
   let display = cm.display, doc = cm.doc
   let fragment = document.createDocumentFragment()
-  let padding = paddingH(cm.display), leftSide = padding.left
-  let rightSide = Math.max(display.sizerWidth, displayWidth(cm) - display.sizer.offsetLeft) - padding.right
+  let leftSide = 0
+  let rightSide = cm.display.cursorDiv.clientWidth
   let docLTR = doc.direction == "ltr"
 
   function add(left, top, width, bottom) {
     if (top < 0) top = 0
     top = Math.round(top)
     bottom = Math.round(bottom)
+    width = width == null ? rightSide - left : width
     fragment.appendChild(elt("div", null, "CodeMirror-selected", `position: absolute; left: ${left}px;
-                             top: ${top}px; width: ${width == null ? rightSide - left : width}px;
+                             top: ${top}px; width: ${width}px;
                              height: ${bottom - top}px`))
   }
 
