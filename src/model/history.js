@@ -65,7 +65,7 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
   let time = +new Date, cur
   let last
 
-  if ((hist.lastOp == opId ||
+  if ( !doc.cm.__mergeUndoGroup__ && (hist.lastOp == opId ||
        hist.lastOrigin == change.origin && change.origin &&
        ((change.origin.charAt(0) == "+" && hist.lastModTime > time - (doc.cm ? doc.cm.options.historyEventDelay : 500)) ||
         change.origin.charAt(0) == "*")) &&
@@ -81,6 +81,7 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
       cur.changes.push(historyChangeFromChange(doc, change))
     }
   } else {
+    if ( doc.cm.__mergeUndoGroup__ ) doc.cm.__mergeUndoGroup__ = null
     // Can not be merged, start a new event.
     let before = lst(hist.done)
     if (!before || !before.ranges)
