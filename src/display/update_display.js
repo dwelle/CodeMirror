@@ -23,7 +23,7 @@ export class DisplayUpdate {
 
     this.viewport = viewport
     // Store some values that we'll need later (but don't want to force a relayout for)
-    this.visible = visibleLines(display, cm.doc, viewport)
+    cm.visibleLines = this.visible = visibleLines(display, cm.doc, viewport)
     this.editorIsHidden = !display.wrapper.offsetWidth
     this.wrapperHeight = display.wrapper.clientHeight
     this.wrapperWidth = display.wrapper.clientWidth
