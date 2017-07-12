@@ -264,7 +264,7 @@ export default function(CodeMirror) {
 
     execCommand: function(cmd) {
       if (commands.hasOwnProperty(cmd))
-        return commands[cmd].call(null, this)
+        return commands[cmd].apply( null, [ this ].concat(Array.prototype.slice.call(arguments, 1)) )
     },
 
     triggerElectric: methodOp(function(text) { triggerElectric(this, text) }),
