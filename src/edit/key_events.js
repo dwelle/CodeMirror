@@ -11,7 +11,7 @@ import { Delayed, Pass } from "../util/misc.js"
 import { commands } from "./commands.js"
 
 // Run a handler that was bound to a key.
-function doHandleBinding(cm, bound, dropShift) {
+function doHandleBinding(cm, bound, dropShift, e) {
   if (typeof bound == "string") {
     bound = commands[bound]
     if (!bound) return false
@@ -23,7 +23,7 @@ function doHandleBinding(cm, bound, dropShift) {
   try {
     if (cm.isReadOnly()) cm.state.suppressEdits = true
     if (dropShift) cm.display.shift = false
-    done = bound(cm) != Pass
+    done = bound(cm, e) != Pass
   } finally {
     cm.display.shift = prevShift
     cm.state.suppressEdits = false
@@ -31,13 +31,13 @@ function doHandleBinding(cm, bound, dropShift) {
   return done
 }
 
-function lookupKeyForEditor(cm, name, handle) {
+function lookupKeyForEditor(cm, name, handle, e) {
   for (let i = 0; i < cm.state.keyMaps.length; i++) {
-    let result = lookupKey(name, cm.state.keyMaps[i], handle, cm)
+    let result = lookupKey(name, cm.state.keyMaps[i], handle, cm, e)
     if (result) return result
   }
-  return (cm.options.extraKeys && lookupKey(name, cm.options.extraKeys, handle, cm))
-    || lookupKey(name, cm.options.keyMap, handle, cm)
+  return (cm.options.extraKeys && lookupKey(name, cm.options.extraKeys, handle, cm, e))
+    || lookupKey(name, cm.options.keyMap, handle, cm, e)
 }
 
 // Note that, despite the name, this function is also used to check
@@ -64,7 +64,7 @@ export function dispatchKey(cm, name, e, handle) {
 }
 
 function dispatchKeyInner(cm, name, e, handle) {
-  let result = lookupKeyForEditor(cm, name, handle)
+  let result = lookupKeyForEditor(cm, name, handle, e)
 
   if (result == "multi")
     cm.state.keySeq = name
@@ -88,19 +88,19 @@ function handleKeyBinding(cm, e) {
     // First try to resolve full name (including 'Shift-'). Failing
     // that, see if there is a cursor-motion command (starting with
     // 'go') bound to the keyname without 'Shift-'.
-    return dispatchKey(cm, "Shift-" + name, e, b => doHandleBinding(cm, b, true))
+    return dispatchKey(cm, "Shift-" + name, e, b => doHandleBinding(cm, b, true, e))
         || dispatchKey(cm, name, e, b => {
              if (typeof b == "string" ? /^go[A-Z]/.test(b) : b.motion)
-               return doHandleBinding(cm, b)
+               return doHandleBinding(cm, b, undefined, e)
            })
   } else {
-    return dispatchKey(cm, name, e, b => doHandleBinding(cm, b))
+    return dispatchKey(cm, name, e, b => doHandleBinding(cm, b, undefined, e))
   }
 }
 
 // Handle a key from the keypress event
 function handleCharBinding(cm, e, ch) {
-  return dispatchKey(cm, "'" + ch + "'", e, b => doHandleBinding(cm, b, true))
+  return dispatchKey(cm, "'" + ch + "'", e, b => doHandleBinding(cm, b, true, e))
 }
 
 let lastStoppedKey = null
