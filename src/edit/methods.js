@@ -12,7 +12,7 @@ import { getKeyMap } from "../input/keymap.js"
 import { endOfLine, moveLogically, moveVisually } from "../input/movement.js"
 import { endOperation, methodOp, operation, runInOp, startOperation } from "../display/operations.js"
 import { clipLine, clipPos, equalCursorPos, Pos } from "../line/pos.js"
-import { charCoords, charWidth, clearCaches, clearLineMeasurementCache, coordsChar, cursorCoords, displayHeight, displayWidth, estimateLineHeights, fromCoordSystem, intoCoordSystem, scrollGap, textHeight } from "../measurement/position_measurement.js"
+import { charCoords, charWidth, clearCaches, clearLineMeasurementCache, coordsChar, cursorCoords, displayHeight, displayWidth, estimateLineHeights, fromCoordSystem, intoCoordSystem, scrollGap, textHeight, findViewForLine } from "../measurement/position_measurement.js"
 import { Range } from "../model/selection.js"
 import { replaceOneSelection, skipAtomic } from "../model/selection_updates.js"
 import { addToScrollTop, ensureCursorVisible, scrollIntoView, scrollToCoords, scrollToCoordsRange, scrollToRange } from "../display/scrolling.js"
@@ -218,6 +218,7 @@ export default function(CodeMirror) {
 
     defaultTextHeight: function() { return textHeight(this.display) },
     defaultCharWidth: function() { return charWidth(this.display) },
+    findViewForLine: function(lineN) { return findViewForLine(this, lineN)},
 
     getViewport: function() { return {from: this.display.viewFrom, to: this.display.viewTo}},
 
