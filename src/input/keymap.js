@@ -99,18 +99,18 @@ export function normalizeKeyMap(keymap) {
   return keymap
 }
 
-export function lookupKey(key, map, handle, context) {
+export function lookupKey(key, map, handle, context, e) {
   map = getKeyMap(map)
   let found = map.call ? map.call(key, context) : map[key]
   if (found === false) return "nothing"
   if (found === "...") return "multi"
-  if (found != null && handle(found)) return "handled"
+  if (found != null && handle(found, e)) return "handled"
 
   if (map.fallthrough) {
     if (Object.prototype.toString.call(map.fallthrough) != "[object Array]")
-      return lookupKey(key, map.fallthrough, handle, context)
+      return lookupKey(key, map.fallthrough, handle, context, e)
     for (let i = 0; i < map.fallthrough.length; i++) {
-      let result = lookupKey(key, map.fallthrough[i], handle, context)
+      let result = lookupKey(key, map.fallthrough[i], handle, context, e)
       if (result) return result
     }
   }
