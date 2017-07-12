@@ -59,13 +59,13 @@ export default class ContentEditableInput {
     function onCopyCut(e) {
       if (signalDOMEvent(cm, e)) return
       if (cm.somethingSelected()) {
-        setLastCopied({lineWise: false, text: cm.getSelections()})
+        setLastCopied(e, cm, {lineWise: false, text: cm.getSelections()})
         if (e.type == "cut") cm.replaceSelection("", null, "cut")
       } else if (!cm.options.lineWiseCopyCut) {
         return
       } else {
         let ranges = copyableRanges(cm)
-        setLastCopied({lineWise: true, text: ranges.text})
+        setLastCopied(e, cm, {lineWise: true, text: ranges.text})
         if (e.type == "cut") {
           cm.operation(() => {
             cm.setSelections(ranges.ranges, 0, sel_dontScroll)

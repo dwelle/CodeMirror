@@ -62,6 +62,9 @@ export function onDrop(e) {
     try {
       let text = e.dataTransfer.getData("Text")
       if (text) {
+        let ret = cm.triggerHook("will-insertDroppedText", { e, text, pos, isInternal: cm.state.draggingText })
+        if ( ret === false ) return
+        if ( typeof ret === "string" ) text = ret
         let selected
         if (cm.state.draggingText && !cm.state.draggingText.copy)
           selected = cm.listSelections()

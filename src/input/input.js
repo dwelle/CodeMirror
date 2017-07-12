@@ -8,6 +8,7 @@ import { elt } from "../util/dom.js"
 import { lst, map } from "../util/misc.js"
 import { signalLater } from "../util/operation_group.js"
 import { splitLinesAuto } from "../util/feature_detection.js"
+import { signal } from "../util/event.js"
 
 import { indentLine } from "./indent.js"
 
@@ -16,7 +17,8 @@ import { indentLine } from "./indent.js"
 // text was made out of.
 export let lastCopied = null
 
-export function setLastCopied(newLastCopied) {
+export function setLastCopied(e, cm, newLastCopied) {
+  signal(cm, "postcopy", e, newLastCopied)
   lastCopied = newLastCopied
 }
 
@@ -69,7 +71,9 @@ export function applyTextInput(cm, inserted, deleted, sel, origin) {
 }
 
 export function handlePaste(e, cm) {
-  let pasted = e.clipboardData && e.clipboardData.getData("Text")
+  let pasted = typeof e.__pasteOverride__ === "string"
+    ? e.__pasteOverride__
+    : e.clipboardData && e.clipboardData.getData("Text")
   if (pasted) {
     e.preventDefault()
     if (!cm.isReadOnly() && !cm.options.disableInput)
