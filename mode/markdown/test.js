@@ -67,7 +67,7 @@
      "[header&header-1&formatting&formatting-header&formatting-header-1 # ][header&header-1 foo # bar ][header&header-1&formatting&formatting-header&formatting-header-1 #]");
 
   FT("formatting_setextHeader",
-     "foo",
+     "[header&header-1 foo]",
      "[header&header-1&formatting&formatting-header&formatting-header-1 =]");
 
   FT("formatting_blockquote",
@@ -237,27 +237,27 @@
   //
   // Check if single underlining = works
   MT("setextH1",
-     "foo",
+     "[header&header-1 foo]",
      "[header&header-1 =]");
 
   // Check if 3+ ='s work
   MT("setextH1",
-     "foo",
+     "[header&header-1 foo]",
      "[header&header-1 ===]");
 
   // Check if single underlining - works
   MT("setextH2",
-     "foo",
+     "[header&header-2 foo]",
      "[header&header-2 -]");
 
   // Check if 3+ -'s work
   MT("setextH2",
-     "foo",
+     "[header&header-2 foo]",
      "[header&header-2 ---]");
 
   // http://spec.commonmark.org/0.19/#example-45
   MT("setextH2AllowSpaces",
-     "foo",
+     "[header&header-2 foo]",
      "   [header&header-2 ----      ]");
 
   // http://spec.commonmark.org/0.19/#example-44
@@ -273,6 +273,21 @@
   MT("noSetextAfterList",
      "[variable-2 - foo]",
      "[hr ---]");
+
+  MT("setext_nestedInlineMarkup",
+     "[header&header-1 foo ][em&header&header-1 *bar*]",
+     "[header&header-1 =]");
+
+  MT("setext_linkDef",
+     "[link [[aaa]]:] [string&url http://google.com 'title']",
+     "[hr ---]");
+
+  // currently, looks max one line ahead, thus won't catch valid CommonMark
+  //  markup
+  MT("setext_oneLineLookahead",
+     "foo",
+     "bar",
+     "=");
 
   // Single-line blockquote with trailing space
   MT("blockquoteSpace",
