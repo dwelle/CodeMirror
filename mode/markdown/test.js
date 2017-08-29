@@ -286,10 +286,10 @@
      "[header&header-1 foo]",
      "[header&header-1 ===]");
 
-  // Check if single underlining - works
+  // Check if single underlining - works (from 2nd char onward)
   MT("setextH2",
      "[header&header-2 foo]",
-     "[header&header-2 -]");
+     "[header&header-2 --]");
 
   // Check if 3+ -'s work
   MT("setextH2",
@@ -379,12 +379,6 @@
      "foo",
      "[header&header-1 bar]",
      "[header&header-1 =]");
-
-  // ensure we don't regard space after dash as a list
-  MT("setext_emptyList",
-     "[header&header-2 foo]",
-     "[header&header-2 - ]",
-     "foo");
 
   // Single-line blockquote with trailing space
   MT("blockquoteSpace",
