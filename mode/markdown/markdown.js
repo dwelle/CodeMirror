@@ -84,7 +84,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
   }
 
   var hrRE = /^([*\-_])(?:\s*\1){2,}\s*$/
-  ,   listRE = /^(?:[*\-+]|^[0-9]+([.)]))\s+/
+  ,   listRE = /^([*\-+]|^[0-9]+([.)]))\s+/
   ,   taskListRE = /^\[(x| )\](?=\s)/i // Must follow listRE
   ,   atxHeaderRE = modeCfg.allowAtxHeaderWithoutSpace ? /^(#+)/ : /^(#+)(?: |$)/
   ,   setextHeaderRE = /^ *(?:\={1,}|-{2,})\s*$/
@@ -179,6 +179,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
           // less than the first list's indent -> the line is no longer a list
           } else {
             state.list = false;
+            state.listMarkup = null;
           }
         }
         if (state.list !== false) {
@@ -218,10 +219,11 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       stream.eatSpace();
       return getType(state);
     } else if (!isHr && !state.setext && firstTokenOnLine && state.indentation <= maxNonCodeIndentation && (match = stream.match(listRE))) {
-      var listType = match[1] ? "ol" : "ul";
+      var listType = match[2] ? "ol" : "ul";
 
       state.indentation = lineIndentation + stream.current().length;
       state.list = true;
+      state.listMarkup = match[1];
       state.quote = 0;
 
       // Add this list item's content's indentation to the stack
@@ -766,6 +768,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
         hr: false,
         taskList: false,
         list: false,
+        listMarkup: null,
         listStack: [],
         quote: 0,
         trailingSpace: 0,
@@ -806,6 +809,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
         hr: s.hr,
         taskList: s.taskList,
         list: s.list,
+        listMarkup: s.listMarkup,
         listStack: s.listStack.slice(0),
         quote: s.quote,
         indentedCode: s.indentedCode,
