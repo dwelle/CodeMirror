@@ -105,7 +105,7 @@ export function makeChangeFromHistory(doc, type, allowSelectionOnly) {
   for (;;) {
     event = source.pop()
     if (event.ranges) {
-      pushSelectionToHistory(event, dest)
+      pushSelectionToHistory(doc.cm, event, dest)
       if (allowSelectionOnly && !event.equals(doc.sel)) {
         setSelection(doc, event, {clearRedo: false})
         return
@@ -120,7 +120,7 @@ export function makeChangeFromHistory(doc, type, allowSelectionOnly) {
   // Build up a reverse change object to add to the opposite history
   // stack (redo when undoing, and vice versa).
   let antiChanges = []
-  pushSelectionToHistory(selAfter, dest)
+  pushSelectionToHistory(doc.cm, selAfter, dest)
   dest.push({changes: antiChanges, generation: hist.generation})
   hist.generation = event.generation || ++hist.maxGeneration
 
