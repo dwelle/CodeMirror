@@ -65,7 +65,7 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
   let time = +new Date, cur
   let last
 
-  if ( !doc.cm.__mergeUndoGroup__ && (hist.lastOp == opId ||
+  if ( !doc.cm.__markUndoGroup__ && (doc.cm.__preferUndoMerge__ || hist.lastOp == opId ||
        hist.lastOrigin == change.origin && change.origin &&
        ((change.origin.charAt(0) == "+" && hist.lastModTime > time - (doc.cm ? doc.cm.options.historyEventDelay : 500)) ||
         change.origin.charAt(0) == "*")) &&
@@ -81,11 +81,11 @@ export function addChangeToHistory(doc, change, selAfter, opId) {
       cur.changes.push(historyChangeFromChange(doc, change))
     }
   } else {
-    if ( doc.cm.__mergeUndoGroup__ ) doc.cm.__mergeUndoGroup__ = null
+    if ( doc.cm.__markUndoGroup__ ) doc.cm.__markUndoGroup__ = null
     // Can not be merged, start a new event.
     let before = lst(hist.done)
     if (!before || !before.ranges)
-      pushSelectionToHistory(doc.sel, hist.done)
+      pushSelectionToHistory(doc.cm, doc.sel, hist.done)
     cur = {changes: [historyChangeFromChange(doc, change)],
            generation: hist.generation}
     hist.done.push(cur)
@@ -123,13 +123,14 @@ export function addSelectionToHistory(doc, sel, opId, options) {
   // the current, or the origins don't allow matching. Origins
   // starting with * are always merged, those starting with + are
   // merged when similar and close together in time.
-  if (opId == hist.lastSelOp ||
+  let last = lst(hist.done);
+  if ((!last || !last.__unmergeable__) && (opId == hist.lastSelOp ||
       (origin && hist.lastSelOrigin == origin &&
        (hist.lastModTime == hist.lastSelTime && hist.lastOrigin == origin ||
-        selectionEventCanBeMerged(doc, origin, lst(hist.done), sel))))
+        selectionEventCanBeMerged(doc, origin, last, sel)))))
     hist.done[hist.done.length - 1] = sel
   else
-    pushSelectionToHistory(sel, hist.done)
+    pushSelectionToHistory(doc.cm, sel, hist.done)
 
   hist.lastSelTime = +new Date
   hist.lastSelOrigin = origin
@@ -138,7 +139,8 @@ export function addSelectionToHistory(doc, sel, opId, options) {
     clearSelectionEvents(hist.undone)
 }
 
-export function pushSelectionToHistory(sel, dest) {
+export function pushSelectionToHistory(cm, sel, dest) {
+  if ( cm && cm.__disableSelectionHistory__ ) return;
   let top = lst(dest)
   if (!(top && top.ranges && top.equals(sel)))
     dest.push(sel)
