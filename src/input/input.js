@@ -18,7 +18,18 @@ import { indentLine } from "./indent.js"
 export let lastCopied = null
 
 export function setLastCopied(e, cm, newLastCopied) {
-  signal(cm, "postcopy", e, newLastCopied)
+  let ret = cm.triggerHook("will-copyCut", {
+    e: e,
+    lineWise: newLastCopied.lineWise,
+    text: newLastCopied.text
+  });
+  if ( typeof ret === "string" && e.clipboardData && e.clipboardData.setData ) {
+    e.clipboardData.setData("Text", ret);
+    if ( e.clipboardData.getData("Text") === ret ) {
+      newLastCopied.text = [ret];
+      e.preventDefault();
+    }
+  }
   lastCopied = newLastCopied
 }
 
